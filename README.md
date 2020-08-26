@@ -1,3 +1,3 @@
 # MapReduce
 
-Fill this file
+Простая реализация алгоритма MapReduce
