@@ -4,6 +4,7 @@
 MapReduce::MapReduce(std::string fileName, size_t mnum, size_t rnum) 
     : m_fileName(fileName), m_numOfMapThreads(mnum), m_numOfReduceThreads(rnum), m_posInVectorOfPos(0)
 {
+    m_vecOfWordsAfterShuffle.resize(m_numOfMapThreads); // TODO: Подумать над этим
     openFile();
 }
 
@@ -78,8 +79,6 @@ void MapReduce::Map(std::function<std::vector<std::string>(std::string)> map_fun
         curString.push_back(m_fin.get());
     }
     
-    std::cout << "Cur String:" << curString << '\n';
-
     auto vecOfWords = map_function(curString); // std::move?
     std::sort(vecOfWords.begin(), vecOfWords.end());
 
@@ -89,15 +88,30 @@ void MapReduce::Map(std::function<std::vector<std::string>(std::string)> map_fun
     // Построчное извлечение данных
     // Передача этих данных лямбде, лямбду нужно запускать в потоке
     // Лямбда должна разбить строку на слова
-
-    shuffle();
 }
 
-void MapReduce::shuffle()
+void MapReduce::shuffle(size_t numOfVec)
 {
-    // for(const auto& word: m_)
+    for(const auto& word: m_vecOfWordsAfterMap[numOfVec])
+    {
+        auto hash = std::hash<std::string>{}(word);
+        m_vecOfWordsAfterShuffle[hash%m_numOfMapThreads].emplace_back(word); 
+        // TODO: обратить внимание, что бы вектора были отсортированы!(проверить, мб ничего дополнительного делать не надо)
+    }
     // TODO: Сделать мультипоточным
     // Создать векторов по кол-ву М потоков
     // Примерно равномерно заполнить их словами из векторов с предыдущего шага
     // При этом одинаковые слова обязатель должны быть в 1 векторе
+}
+
+void MapReduce::print()
+{
+    for(const auto& vecOfWords: m_vecOfWordsAfterShuffle)
+    {
+        std::cout << "\n--------------\n";
+        for(const auto& words: vecOfWords)
+        {
+            std::cout << words << '\n';
+        }
+    }
 }

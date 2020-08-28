@@ -9,7 +9,9 @@ public:
     MapReduce(std::string fileName, size_t mnum, size_t rnum);
     ~MapReduce();
 
-    void Map(std::function<std::vector<std::string>(std::string)> map_function);
+    void Map(std::function<std::vector<std::string>(std::string)> map_function); // TODO: make private
+    void shuffle(size_t numOfVec); // TODO: make private
+    void print();
 private:
     std::string m_fileName;
     size_t m_numOfMapThreads;
@@ -21,8 +23,8 @@ private:
     size_t m_posInVectorOfPos;
 
     std::vector<std::vector<std::string>> m_vecOfWordsAfterMap;
+    std::vector<std::vector<std::string>> m_vecOfWordsAfterShuffle;
 private:
     void openFile();
     void splitFile();
-    void shuffle();
 };

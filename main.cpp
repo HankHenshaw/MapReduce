@@ -48,11 +48,16 @@ int main(int argc, char *argv[])
         return vecOfWords;
     };
 
-    MapReduce map_reduce(filename, mnum, rnum);
-    map_reduce.Map(mapLambda);
-    map_reduce.Map(mapLambda);
-
     //TODO: Получать пользовательскую лямбду для map и для reduce в к-торе
+    MapReduce map_reduce(filename, mnum, rnum);
+
+    /*Remove*/
+    map_reduce.Map(mapLambda);
+    map_reduce.Map(mapLambda);
+    map_reduce.shuffle(0);
+    map_reduce.shuffle(1);
+    map_reduce.print();
+    /*Remove*/
 
     return 0;
 }
