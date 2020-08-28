@@ -2,7 +2,7 @@
 #include "mapreduce.h"
 
 MapReduce::MapReduce(std::string fileName, size_t mnum, size_t rnum) 
-    : m_fileName(fileName), m_numOfMapThreads(mnum), m_numOfReduceThreads(rnum)
+    : m_fileName(fileName), m_numOfMapThreads(mnum), m_numOfReduceThreads(rnum), m_posInVectorOfPos(0)
 {
     openFile();
 }
@@ -44,7 +44,7 @@ void MapReduce::splitFile()
     {
         m_fin.seekg(quotient, std::ios_base::beg);
 
-        while(m_fin.peek() != 32)
+        while(m_fin.peek() != 32) //TODO: проверка на '\n'
         {
             m_fin.seekg(1, std::ios_base::cur);
 
@@ -55,6 +55,7 @@ void MapReduce::splitFile()
         }
 
         m_splitPositions.emplace_back(std::make_pair(curPos, m_fin.tellg()));
+        m_fin.seekg(1, std::ios_base::cur); // Чтобы пропустить пробел
 
         curPos = m_fin.tellg();
         --numOfMapThreads;
@@ -63,25 +64,40 @@ void MapReduce::splitFile()
     m_splitPositions.emplace_back(std::make_pair(curPos, lastPos));
 }
 
-void MapReduce::Map() // TODO: Почему-то последняя строка в файле дублируется
+void MapReduce::Map(std::function<std::vector<std::string>(std::string)> map_function)
 {
-    std::string tmp;
-    while(m_fin)
-    {
-        std::cout << "File pos:" << m_fin.tellg() << '\n';
-        m_fin >> tmp;
-        m_hash[tmp] += 1;
-    }
+    auto begPos = m_splitPositions[m_posInVectorOfPos].first;
+    auto lastPos = m_splitPositions[m_posInVectorOfPos].second;
+    ++m_posInVectorOfPos;
 
-//    printHash();
+    m_fin.seekg(begPos, std::ios_base::beg);
+
+    std::string curString;
+    while(m_fin.tellg() < lastPos)
+    {
+        curString.push_back(m_fin.get());
+    }
+    
+    std::cout << "Cur String:" << curString << '\n';
+
+    auto vecOfWords = map_function(curString); // std::move?
+    std::sort(vecOfWords.begin(), vecOfWords.end());
+
+    m_vecOfWordsAfterMap.emplace_back(std::move(vecOfWords));
+
+    // TODO: Сделать мультипоточной
+    // Построчное извлечение данных
+    // Передача этих данных лямбде, лямбду нужно запускать в потоке
+    // Лямбда должна разбить строку на слова
+
+    shuffle();
 }
 
-void MapReduce::printHash() // Remove
+void MapReduce::shuffle()
 {
-    auto itb = m_hash.begin();
-    while(itb != m_hash.end())
-    {
-        std::cout << "Key: " << itb->first << "|Value: " << itb->second << '\n';
-        ++itb; 
-    }
+    // for(const auto& word: m_)
+    // TODO: Сделать мультипоточным
+    // Создать векторов по кол-ву М потоков
+    // Примерно равномерно заполнить их словами из векторов с предыдущего шага
+    // При этом одинаковые слова обязатель должны быть в 1 векторе
 }

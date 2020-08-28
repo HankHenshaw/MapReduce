@@ -28,7 +28,31 @@ int main(int argc, char *argv[])
         }
     }
 
-    MapReduce(filename, mnum, rnum);
+    auto mapLambda = [](std::string string)
+    {
+        std::vector<std::string> vecOfWords;
+
+        size_t pos = string.find(' ');
+        size_t begPos = 0;
+
+        while(pos != std::string::npos)
+        {
+            vecOfWords.emplace_back(string.substr(begPos, pos - begPos));
+            begPos = pos + 1;
+
+            pos = string.find(' ', begPos);
+        }
+
+        vecOfWords.emplace_back(string.substr(begPos, pos - begPos));
+
+        return vecOfWords;
+    };
+
+    MapReduce map_reduce(filename, mnum, rnum);
+    map_reduce.Map(mapLambda);
+    map_reduce.Map(mapLambda);
+
+    //TODO: Получать пользовательскую лямбду для map и для reduce в к-торе
 
     return 0;
 }
