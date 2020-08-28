@@ -1,6 +1,7 @@
 #include <string>
 #include <fstream>
 #include <unordered_map>
+#include <vector>
 
 class MapReduce {
 public:
@@ -13,9 +14,12 @@ private:
 
     std::ifstream m_fin;
 
-    std::unordered_map<std::string, size_t> m_hash;
+    std::unordered_map<std::string, size_t> m_hash; // Remove?
+
+    std::vector<std::pair<std::streampos, std::streampos>> m_splitPositions;
 private:
     void openFile();
+    void splitFile();
     void Map();
 
     void printHash(); //Remove
