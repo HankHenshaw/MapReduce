@@ -9,8 +9,9 @@ public:
     MapReduce(std::string fileName, size_t mnum, size_t rnum);
     ~MapReduce();
 
-    void Map(std::function<std::vector<std::string>(std::string)> map_function); // TODO: make private
+    void map(std::function<std::vector<std::string>(std::string)> map_function); // TODO: make private
     void shuffle(size_t numOfVec); // TODO: make private
+    void reduce(size_t numOfVec);
     void print();
 private:
     std::string m_fileName;

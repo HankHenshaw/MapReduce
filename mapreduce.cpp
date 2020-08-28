@@ -22,7 +22,7 @@ void MapReduce::openFile()
     }
 
     splitFile();
-//    Map();
+//    map();
 }
 
 void MapReduce::splitFile()
@@ -65,7 +65,7 @@ void MapReduce::splitFile()
     m_splitPositions.emplace_back(std::make_pair(curPos, lastPos));
 }
 
-void MapReduce::Map(std::function<std::vector<std::string>(std::string)> map_function)
+void MapReduce::map(std::function<std::vector<std::string>(std::string)> map_function)
 {
     auto begPos = m_splitPositions[m_posInVectorOfPos].first;
     auto lastPos = m_splitPositions[m_posInVectorOfPos].second;
@@ -102,6 +102,34 @@ void MapReduce::shuffle(size_t numOfVec)
     // Создать векторов по кол-ву М потоков
     // Примерно равномерно заполнить их словами из векторов с предыдущего шага
     // При этом одинаковые слова обязатель должны быть в 1 векторе
+}
+
+void MapReduce::reduce(size_t numOfVec)
+{
+    //TODO: Сделать мультипоточным
+    //Вывести в файл данные в виде [кол-во этого слова][слово]
+    std::ofstream fout;
+    fout.open(std::to_string(numOfVec+1) + "_reduce.txt", std::ios_base::app | std::ios_base::out);
+    if(fout.is_open())
+    {
+        auto counter = 1;
+        auto size = m_vecOfWordsAfterShuffle[numOfVec].size();
+        for(size_t i = 0; i < size - 1; ++i)
+        {
+            if(m_vecOfWordsAfterShuffle[numOfVec][i] == m_vecOfWordsAfterShuffle[numOfVec][i+1])
+            {
+                ++counter;
+            } else {
+                fout << counter << ' ' << m_vecOfWordsAfterShuffle[numOfVec][i] << '\n';
+                counter = 1;
+            }
+        }
+        fout << counter << ' ' << m_vecOfWordsAfterShuffle[numOfVec][size - 1] << '\n';
+        fout.close();
+    } else {
+        throw std::ios_base::failure("can't open file");
+    }
+
 }
 
 void MapReduce::print()
