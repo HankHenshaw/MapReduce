@@ -48,18 +48,34 @@ int main(int argc, char *argv[])
         return vecOfWords;
     };
 
-    //TODO: Получать пользовательскую лямбду для map и для reduce в к-торе
-    MapReduce map_reduce(filename, mnum, rnum);
+    auto reduceLambda = [](std::string string, size_t num)
+    {
+        std::ofstream fout;
+        fout.open(std::to_string(num+1) + "_reduce.txt", std::ios_base::app | std::ios_base::out);
+        if(!fout.is_open())
+        {
+            throw std::ios_base::failure("can't open file");
+        } else {
+            // TODO!
+        }
+        //     auto counter = 1;
+        //     auto size = m_vecOfWordsAfterShuffle[numOfVec].size();
+        //     for(size_t i = 0; i < size - 1; ++i)
+        //     {
+        //         if(m_vecOfWordsAfterShuffle[numOfVec][i] == m_vecOfWordsAfterShuffle[numOfVec][i+1])
+        //         {
+        //             ++counter;
+        //         } else {
+        //             fout << counter << ' ' << m_vecOfWordsAfterShuffle[numOfVec][i] << '\n';
+        //             counter = 1;
+        //         }
+        //     }
+        //     fout << counter << ' ' << m_vecOfWordsAfterShuffle[numOfVec][size - 1] << '\n';
+        //     fout.close();
+    };
 
-    /*Remove*/
-    map_reduce.map(mapLambda);
-    map_reduce.map(mapLambda);
-    map_reduce.shuffle(0);
-    map_reduce.shuffle(1);
-    map_reduce.reduce(0);
-    map_reduce.reduce(1);
-    //map_reduce.print();
-    /*Remove*/
+    //TODO: Получать пользовательскую лямбду для map и для reduce в к-торе
+    MapReduce map_reduce(filename, mnum, rnum, mapLambda, reduceLambda);
 
     return 0;
 }
