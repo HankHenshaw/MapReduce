@@ -53,8 +53,6 @@ int main(int argc, char *argv[])
 
         fout.open(std::to_string(num) + "_reduce.txt", std::ios_base::app | std::ios_base::out);
 
-        //std::cout << count << ' ' << string << '\n';
-
         if(!fout.is_open())
         {
             throw std::ios_base::failure("can't open file");

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <chrono> // TODO: Remove
 #include "mapreduce.h"
 
 using namespace std::chrono_literals;
