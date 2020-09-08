@@ -21,7 +21,6 @@ private:
     std::ifstream m_fin;
 
     std::vector<std::pair<std::streampos, std::streampos>> m_splitPositions;
-    size_t m_posInVectorOfPos;
 
     std::vector<std::vector<std::string>> m_vecOfWordsAfterMap;
     std::vector<std::vector<std::string>> m_vecOfWordsAfterShuffle;

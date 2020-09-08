@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "mapreduce.h"
 
 using namespace std::chrono_literals;
@@ -6,7 +7,7 @@ using namespace std::chrono_literals;
 MapReduce::MapReduce(std::string fileName, size_t mnum, size_t rnum, 
         std::function<std::vector<std::string>(std::string)> mapLambda,
             std::function<void(std::string, size_t, size_t)> reduceLambda) 
-    : m_fileName(std::move(fileName)), m_numOfMapThreads(mnum), m_numOfReduceThreads(rnum), m_posInVectorOfPos(0),
+    : m_fileName(std::move(fileName)), m_numOfMapThreads(mnum), m_numOfReduceThreads(rnum),
         m_mapLambda(std::move(mapLambda)),
         m_reduceLambda(std::move(reduceLambda)),
         m_shuffleInt(-1)
